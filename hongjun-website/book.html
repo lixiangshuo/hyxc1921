@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>丹心有轩 · 红语薪传翻书故事</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        /* 全局背景（可替换为你的图片） */
+        body {
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('images/bg-book-global.jpg');
+            background-size: cover;
+            background-attachment: fixed;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Georgia', 'Times New Roman', '宋体', serif;
+            padding: 20px;
+        }
+
+        .book-container {
+            perspective: 2000px;
+            width: 100%;
+            max-width: 1000px;
+            margin: 20px auto;
+        }
+
+        .book {
+            position: relative;
+            width: 100%;
+            background: transparent;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .page-area {
+            position: relative;
+            min-height: 600px;
+            background: transparent;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .page {
+            width: 100%;
+            min-height: 600px;
+            padding: 2rem 2.5rem;
+            box-sizing: border-box;
+            display: none;
+            position: relative;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .page.active {
+            display: block;
+            animation: fadeIn 0.4s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        /* 封面背景图（用户自备，比例1200:1600） */
+        .cover {
+            background-image: url('images/book-cover-bg.jpg');
+            /* 不加任何文字内容 */
+        }
+
+        /* 内页背景图（所有故事页共用一张背景） */
+        .inner-page {
+            background-image: url('images/book-page-bg.jpg');
+            position: relative;
+        }
+        /* 内页半透明遮罩，提高文字可读性（可选，可删除） */
+        .inner-page::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 248, 235, 0.85);
+            z-index: 0;
+            border-radius: 8px;
+        }
+        .inner-page > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 结语页背景图 */
+        .back-cover {
+            background-image: url('images/book-end-bg.jpg');
+            /* 无文字内容 */
+        }
+
+        /* 故事内容样式 */
+        .story-title {
+            font-size: 1.8rem;
+            color: #8b3c2c;
+            border-left: 5px solid #d4a373;
+            padding-left: 1rem;
+            margin-bottom: 1rem;
+            font-weight: bold;
+        }
+        .story-meta {
+            color: #a57c4c;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px dashed #e2c8a0;
+            padding-bottom: 0.5rem;
+        }
+        .story-content {
+            line-height: 1.8;
+            font-size: 1rem;
+            text-align: justify;
+            color: #2c2418;
+        }
+        .story-content p {
+            margin-bottom: 1rem;
+        }
+        .story-image {
+            margin: 1.5rem 0;
+            text-align: center;
+        }
+        .story-image img {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            border: 1px solid #e2c8a0;
+        }
+
+        /* 翻页按钮区域 */
+        .nav-buttons {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        .nav-left, .nav-right {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            width: 15%;
+            cursor: pointer;
+            pointer-events: auto;
+            background: transparent;
+            transition: background 0.2s;
+            z-index: 10;
+        }
+        .nav-left { left: 0; }
+        .nav-right { right: 0; }
+        .nav-left:hover, .nav-right:hover {
+            background: rgba(0,0,0,0.05);
+        }
+
+        .page-indicator {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: #d4a373;
+            background: rgba(0,0,0,0.2);
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 30px;
+            backdrop-filter: blur(4px);
+        }
+        .indicator-wrapper {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .page { padding: 1rem; min-height: 500px; }
+            .story-title { font-size: 1.4rem; }
+            .nav-left, .nav-right { width: 20%; }
+        }
+    </style>
+</head>
+<body>
+<div class="book-container">
+    <div class="book">
+        <div class="page-area" id="pageArea">
+            <!-- 封面（无文字内容） -->
+            <div class="page cover active" id="cover"></div>
+
+            <!-- 故事1 -->
+            <div class="page inner-page" id="page1">
+                <div class="story-title">一、十七岁的抉择</div>
+                <div class="story-meta">革命之路 · 1916—1936</div>
+                <div class="story-image"><img src="images/story1.jpg" alt="配图" onerror="this.style.display='none'"></div>
+                <div class="story-content">
+                    <p>1916年6月，陕西户县一个贫苦农家迎来了一个男婴的啼哭。没有人能想到，这个名叫王有轩的孩子，将在几十年后亲身参与改写中国历史进程的“西安事变”，并把自己的一生毫无保留地献给这片黄土地。</p>
+                    <p>户县，南依秦岭，北临渭水，自古便是关中平原的膏腴之地。然而1933年春天，这片土地正被贫穷和饥饿笼罩着。17岁的王有轩站在母亲的灵前，泪水模糊了双眼。为了给因病早逝的母亲置办一副像样的棺木，这个少年做出了改变他一生命运的决定——参加杨虎城所率领的国民革命军第十七路军。</p>
+                    <p>穷人的孩子早当家。彼时的王有轩或许还不完全理解革命的意义，但他已经懂得了一个朴素而沉重的道理：活下去，才有希望。</p>
+                    <p>参军两年后，王有轩被分配负责看守所的工作。看守所里关押着一群特殊的人——那些积极要求抗日的学生。这群被囚禁的青年，在被关押的日子里，仍然高唱着抗日救亡的歌曲，讨论着国家的前途与命运。他们对王有轩讲述日寇的暴行，讲述东北沦陷的惨痛，讲述一个民族不能没有脊梁。这些话语如同一粒粒火种，落进了王有轩年轻而滚烫的胸膛里。</p>
+                    <p>他做出了一个大胆的决定：冒险帮助这群学生向组织传递消息。王有轩利用职务之便，悄悄地递送消息，最终这群学生被顺利营救。而他自己，却因为这件事被打了四十军棍，皮开肉绽。</p>
+                    <p>肉体承受了疼痛，精神却迎来了新生。这四十军棍，没有打碎王有轩的意志，反而让他看清了方向。他明白，国民党不抵抗政策下的中国，救不了百姓，也救不了这个国家。真正的出路，只有一条——跟着共产党走。</p>
+                    <p>1936年10月，王有轩参加了中国共产党领导的中华民族解放先锋队。那颗被学生点燃的火种，终于燎原成信仰的烈焰。</p>
+                </div>
+            </div>
+
+            <!-- 故事2 -->
+            <div class="page inner-page" id="page2">
+                <div class="story-title">二、西安事变中的六十块大洋</div>
+                <div class="story-meta">革命之路 · 1936年12月</div>
+                <div class="story-image"><img src="images/story2.jpg" alt="西安事变配图" onerror="this.style.display='none'"></div>
+                <div class="story-content">
+                    <p>1936年12月12日，凌晨的西安城，枪声划破了寒冬的寂静。张学良和杨虎城两位将军扣留了前来督战的蒋介石，震惊中外的“西安事变”爆发。</p>
+                    <p>消息如惊雷般传遍全国，整个世界都为之震动。当时的王有轩，作为杨虎城第十七路军中的一员，亲身经历了这段改写中国历史的时刻。</p>
+                    <p>在那段剑拔弩张的日子里，王有轩和战友们日夜警戒，紧张而坚定地执行着命令。他表现勇敢，不惧危险，在关键岗位上完成了组织交予的任务。事变最终和平解决，促成了抗日民族统一战线的形成。</p>
+                    <p>为了表彰有功人员，杨虎城将军亲自奖励了王有轩60块大洋。在那个年代，60块大洋是一笔不小的财富。对年仅20岁的王有轩来说，这足以改善他的生活。然而，这个从贫苦农家走出来的青年，面对这笔钱，做出了一个让所有人意外的决定。</p>
+                    <p>他先是拿出5块大洋，送给了重病在床的战友。那位战友握住他的手，想要说些什么，却已说不出口，只是紧紧握着那几块大洋，眼里闪着泪光。接着，他又拿出5块大洋，寄回户县老家，还清了家里欠下的债务。最后，他将剩下的50块大洋，一分不留，全部上交给了党组织。</p>
+                    <p>有人问他：“你就不能给自己留一点吗？”王有轩沉默了一会儿，说：“那么多战友连命都豁出去了，我留着钱干什么？这钱本来就是组织的。”</p>
+                    <p>50块大洋，在当时可以买几亩地，可以让一家人过上安稳的日子。但王有轩选择将它交给了比自己更需要的人。这不是一时的冲动，而是一个刚刚加入中国共产党不久的年轻人，对信仰最朴素、最坚定的表达。</p>
+                    <p>1937年2月，21岁的王有轩正式加入中国共产党。从此，他以一名共产党员的身份，扛起枪，走进了枪林弹雨之中。</p>
+                </div>
+            </div>
+
+            <!-- 故事3 -->
+            <div class="page inner-page" id="page3">
+                <div class="story-title">三、战火中的婚礼</div>
+                <div class="story-meta">革命之路 · 1944年</div>
+                <div class="story-image"><img src="images/story3.jpg" alt="王有轩与妻子" onerror="this.style.display='none'"></div>
+                <div class="story-content">
+                    <p>王有轩的一生，不仅有浴血奋战的壮烈，还有一段战火中的浪漫。</p>
+                    <p>张锦航，1922年8月出生在陕西高陵的一个殷实之家。1936年，蒋介石来到西安，在教会学校上学的张锦航和一批青年学生一起走上街头，向国民政府请愿，要求一致对外抗日。然而，蒋介石却命令部队架起机枪，对准了这些手无寸铁的学生。</p>
+                    <p>枪声没有响起——张学良将军及时赶到，阻止了这场悲剧。但那一刻，张锦航对国民政府彻底失去了信心。几天后，“西安事变”爆发，她秘密加入了共青团。</p>
+                    <p>就是在那个风云激荡的年代，在西安这座英雄的城市里，张锦航和王有轩相识了。一个是满腔热血的革命青年，一个是追求进步的知识女性，共同的信仰让两颗年轻的心越靠越近。</p>
+                    <p>1944年，张锦航做了一个令家人震惊的决定。家人已经为她安排好了赴美留学的机会——在当时，这是多少青年梦寐以求的前程。然而，张锦航毅然放弃了这个机会，在河南偃师与王有轩结为夫妻。</p>
+                    <p>豫西抗日根据地的条件异常艰苦。他们的婚礼没有华丽的装饰，没有盛大的宴席，有的只是战火硝烟中战友们真挚的祝福。战友们送来脸盆、毛巾、被褥、枕巾，以及一条十分珍贵的上海“太平洋”牌床单，为这对革命伉俪贺喜。</p>
+                    <p>简陋的礼物，在战火纷飞的岁月里，却比黄金还要珍贵。婚后，张锦航跟随王有轩辗转各地，走过战火，走过荒原，走过和平年代所有的风雨。她是他的妻子，也是他的战友，更是他革命道路上最坚定的同行者。</p>
+                    <p>1959年，王有轩被派往西藏。因为王有轩患有严重的胃病，尽管舍不得年幼的孩子，张锦航毅然选择随军，到艰苦的雪域高原照顾丈夫。高原反应、严寒气候、物资匮乏，没有一样能够动摇这个从关中平原走出的女人。</p>
+                    <p>王有轩曾对女儿说：“你妈妈跟着我，吃尽了苦头。”张锦航却从不后悔，她只是笑着说：“你在哪里，家就在哪里。”</p>
+                </div>
+            </div>
+
+            <!-- 故事4 -->
+            <div class="page inner-page" id="page4">
+                <div class="story-title">四、永不消逝的战友</div>
+                <div class="story-meta">革命之路 · 1950年</div>
+                <div class="story-image"><img src="images/story4.jpg" alt="景山公园合影" onerror="this.style.display='none'"></div>
+                <div class="story-content">
+                    <p>1949年10月1日，中华人民共和国成立了。王有轩终于等来了这个他奋斗了十几年的时刻。</p>
+                    <p>然而和平的曙光并没有让这个老兵停下脚步。1950年，朝鲜战争爆发，战火烧到了鸭绿江边。10月25日，中国人民志愿军打响了入朝后的第一次战役。王有轩主动请缨，随部队奔赴朝鲜战场，担任中国人民志愿军政治部敌工科科长，在冰天雪地中担负着繁重的政治工作。</p>
+                    <p>出发前，王有轩和3名战友在北京景山公园拍了一张合影。那是1950年秋天的一个晴天，四个人穿着崭新的军装，肩并着肩，对着镜头露出了笑容。没有人知道，这张照片将成为一个永恒的纪念，也将成为王有轩心中永远的伤痛。</p>
+                    <p>朝鲜的冬天，寒冷刺骨，气温常常降到零下三四十度。但比天气更残酷的，是战场上的炮火。</p>
+                    <p>王有轩所在的部队长期在枪林弹雨中作战，炮弹在身边不断炸开，巨大的爆炸声震耳欲聋。在一次激战中，王有轩的听力在巨大的炮火声中严重受损。但他没有退下火线，咬着牙坚持到了最后。</p>
+                    <p>战争终于结束了。当王有轩带着满身伤痕回到祖国时，他把那张景山公园的合影翻了出来，看了又看。照片上的3名战友，两名已经在战场上牺牲，永远地留在了那片异国的土地上；还有一名，被炸断了双腿，终生坐在轮椅上。</p>
+                    <p>王有轩看着照片，久久不语。他的眼泪在眼眶里打转，最终却没有落下来。“那么多人都牺牲了，我这个活着的人还争什么呢？”多年以后，当家人劝他争取更好的待遇时，他总是这样说。</p>
+                    <p>他的听力再也没有恢复。从朝鲜战场回来后，他几近失聪，晚年需要佩戴助听器才能与人交流。但他说：“听不见算什么，战友们连命都留在了那里。”</p>
+                </div>
+            </div>
+
+            <!-- 故事5 -->
+            <div class="page inner-page" id="page5">
+                <div class="story-title">五、公车不是给你坐的</div>
+                <div class="story-meta">红色家风 · 1970年代</div>
+                <div class="story-image"><img src="images/story5.jpg" alt="王有轩晚年" onerror="this.style.display='none'"></div>
+                <div class="story-content">
+                    <p>战争结束，硝烟散去，王有轩转业到地方工作，担任过西安铁路局机关党委书记、青藏铁路工程局北京办事处主任等职务。他从硝烟弥漫的战场走进了和平建设的年代，但他身上那股对信仰的忠诚和对原则的坚守，从未改变。</p>
+                    <p>王有轩有一辆公车，是组织上为了方便他开展工作配备的。对那个年代的人来说，有一辆公车，是一件很有面子的事。可是在王有轩眼里，这辆车只有一种用途——工作。</p>
+                    <p>有一天，女儿王放急着上班，眼看就要迟到了。她看见院子里的公车，鼓起勇气对父亲说：“爸，我想搭一下您的车。”王有轩放下手中的报纸，看了看女儿，表情严肃起来：“这车是组织给我工作的，不是给你坐的。”</p>
+                    <p>王放愣了一下，还想说点什么，但看到父亲坚定的目光，话到嘴边又咽了回去。她骑着自行车，急急忙忙赶去上班，一路上寒风刮在脸上，生疼。从那以后，王放再也没有向父亲提过“搭公车”这三个字。</p>
+                    <p>类似的事情还有很多。有一回，王放从父亲那里拿了20斤花生豆，装了一些在书包里，第二天到学校给关系好的女生分了几颗。在那个物资匮乏的年代，花生豆是难得的奢侈品。王有轩知道后，没有发火，只是淡淡地说了一句：“公家的东西，省着点用。”</p>
+                    <p>王放说：“父亲对公和私分得很清楚。组织配给他的东西，就是组织的，一点也不能动。”这种近乎刻板的原则，正是那一代人共同的信仰。他们扛过枪、跨过江，在枪林弹雨中活了下来，便觉得活着本身就是最大的恩赐，再也没有什么可以向组织多要求的。</p>
+                    <p>王有轩离休后，有人劝他：“您是老红军，为革命付出了那么多，向组织提点要求，应该的。”王有轩只是摇摇头：“那么多战友都牺牲了，我能活到今天，已经足够了。”</p>
+                </div>
+            </div>
+
+            <!-- 故事6 -->
+            <div class="page inner-page" id="page6">
+                <div class="story-title">六、一角水费里的原则</div>
+                <div class="story-meta">红色家风 · 1970年代</div>
+                <div class="story-image"><img src="images/story6.jpg" alt="王有轩" onerror="this.style.display='none'"></div>
+                <div class="story-content">
+                    <p>在王有轩家里，有一件事一直被传为“佳话”。那是一个普通的下午，王放看见家里的纱窗脏了，就拿到楼下的水龙头旁边，用公家的水冲洗干净。王有轩刚好路过，看到这一幕，停下脚步问道：“这水是公家的还是家里的？”</p>
+                    <p>王放随口回答：“公家的。”“那你去财务处交水费。”王有轩的语气平静，却没有任何商量的余地。</p>
+                    <p>王放愣住了。不过是一点水而已，用公家的水洗个纱窗，用得着去交水费吗？“爸，至于吗？”王放不解。“公家的东西，一分一毫都不能占。”王有轩说。</p>
+                    <p>最终，王放还是去了财务处，交了1角钱水费。1角钱，在那个时候可以买一个馒头，可以买两根冰棍。但在王有轩的心里，这不是钱的问题，这是一个共产党员能不能守住底线的问题。</p>
+                    <p>王有轩的节俭，在家人眼里近乎“苛刻”。他的毛巾用得毛都快掉光了，也舍不得换新的。一条毛巾，用了三年。衣服破了，缝一缝继续穿。吃穿用度，一切从简。</p>
+                    <p>可是对待公家的事情，他却格外认真。有一次，王有轩用汽油洗大衣，完事后专程去财务处交钱。财务处的同志说：“您是老革命了，这点小事不用了。”王有轩坚持要交：“公家的东西，用了就要给钱，这是规矩。”</p>
+                    <p>王放后来回忆说：“父亲从来不会觉得‘我是老红军，我有资格享受特殊待遇’。恰恰相反，他觉得自己只有做得更好才对得起牺牲的战友，从没有想过利用这个身份占公家一点便宜。”</p>
+                    <p>在王有轩身上，我们看到了一种朴素的清廉——它不是做给别人看的，而是刻在骨子里的，是那一代人共同的精神底色。</p>
+                </div>
+            </div>
+
+            <!-- 故事7 -->
+            <div class="page inner-page" id="page7">
+                <div class="story-title">七、最后的嘱托</div>
+                <div class="story-meta">红色家风 · 2010年</div>
+                <div class="story-image"><img src="images/story7.jpg" alt="王有轩临终" onerror="this.style.display='none'"></div>
+                <div class="story-content">
+                    <p>时间走到2010年，王有轩已是94岁高龄。这个经历了旧中国所有苦难、亲历了新中国所有重大历史转折的老人，终于走到了生命的尽头。</p>
+                    <p>临终前，他把子女们叫到了床前。病床上的王有轩，头发花白，面容清瘦，但眼神依然清亮。他颤巍巍地从枕头底下拿出一个布包，一层一层地打开——里面是一笔钱。</p>
+                    <p>“这是我一生的积蓄，48万元。”王有轩的声音很轻，却一字一句地落进每个人的心里。“全部捐给户县老家的小学，给孩子们建一个微机室。”</p>
+                    <p>病房里沉默了。王放和兄弟姐妹们知道，父亲一生节俭，从不乱花一分钱，这些钱是他一点一点攒下来的。如今，他要把这些钱全部捐出去，不留一分。</p>
+                    <p>“我没读过什么书，”王有轩缓缓说道，“但我想让家乡的孩子，能用上电脑。”那一刻，病房里有人流泪了。</p>
+                    <p>这笔捐款最终被送到了户县响桥小学。微机室建成那天，孩子们坐在崭新的电脑前，好奇地按着键盘，眼睛里闪烁着兴奋的光芒。微机室的门上，挂着一块牌子——“有轩微机室”。</p>
+                    <p>王放站在门口，看着那群孩子，想起了父亲的话。她仿佛看见父亲站在一旁，脸上露出了少有的笑容。</p>
+                    <p>王有轩的遗愿很简单——身披党旗，走完最后一程。那一天，鲜红的党旗覆盖在他的身上，正如他这一生，始终被一种信仰守护，也始终守护着那份信仰。</p>
+                    <p>他没有给子女留下什么物质财富，没有房产，没有存款。他留给这个世界的，是一笔48万元的捐款，和一份用一生写就的红色家风。“父亲留给我最大的遗产，不是钱，是信仰。”王放后来说。</p>
+                </div>
+            </div>
+
+            <!-- 故事8 -->
+            <div class="page inner-page" id="page8">
+                <div class="story-title">八、卖掉房子的女儿</div>
+                <div class="story-meta">两代传承 · 2010年</div>
+                <div class="story-image"><img src="images/story8.jpg" alt="王放宣讲" onerror="this.style.display='none'"></div>
+                <div class="story-content">
+                    <p>父亲走后，王放陷入了深深的思考。她想念父亲，想念那个让她去交1角水费的父亲，想念那个不让她坐公车的父亲。她翻看着家里的相册，一张一张地翻阅父亲的人生，忽然意识到一个问题：父亲的故事，还有多少人在听？</p>
+                    <p>2010年，61岁的王放刚刚退休。本该是含饴弄孙、安享晚年的年纪，她却做了一件让所有人都大吃一惊的事情——搞红色宣讲活动。</p>
+                    <p>她找到了一群志同道合的革命后代，有杨虎城将军的女儿杨拯美，有“小萝卜头”的姐姐宋振平，有刘志丹烈士的女儿刘力贞。2010年6月15日，陕西三秦儿女红色宣讲团正式成立。7月20日，陕西三秦儿女红色讲师团也正式成立。</p>
+                    <p>然而，搞宣讲需要场地，需要设备，需要各种开销。钱从哪里来？王放做了一个让所有人都无法理解的决定——卖掉自己唯一的房子。</p>
+                    <p>“你疯了吗？”朋友们劝她，“退休了不好好享福，折腾什么？”王放没有理会那些声音。她把自己卖了房子的30多万元全部投入到宣讲团的运营中，租办公房、购买办公设备、制作宣传展板、撰写演讲稿。</p>
+                    <p>她说：“很多人觉得我一大把年纪了，退休在家好好享福多好。可是自从我父亲走后，我一直在找这些抗战英雄和革命先烈的亲属，每找到一个，听了他们的故事，都加深了我心里搞红色文化宣传的信念。”</p>
+                </div>
+            </div>
+
+            <!-- 故事9 -->
+            <div class="page inner-page" id="page9">
+                <div class="story-title">九、让红色电波永不消逝</div>
+                <div class="story-meta">两代传承 · 2010年至今</div>
+                <div class="story-image"><img src="images/story9.jpg" alt="王放宣讲" onerror="this.style.display='none'"></div>
+                <div class="story-content">
+                    <p>宣讲团成立之初，困难重重。“一开始，活动比较难做，”王放回忆道，“我们从基层做起，自下而上地宣传，从学校到区政府再到省级政府配合我们，一步步这样撑了下来。”</p>
+                    <p>她带着宣讲团走进学校、走进机关、走进社区。每一次宣讲，她都站在台上，饱含深情地讲述父辈们的革命故事。讲到动情处，她的眼眶会红，台下的人也跟着红了眼。</p>
+                    <p>2015年，王放接到了一份特殊的邀请——在纪念抗日战争暨世界反法西斯战争胜利70周年主题宣讲活动上，与胡乔木之女胡木英、周恩来总理侄女周秉宜等革命后代齐聚西安，共同讲述那段峥嵘岁月。那一刻，她感到自己肩负的不仅是父亲的故事，更是一个民族不能忘却的记忆。</p>
+                    <p>2017年，她受邀到井冈山宣讲。连续18天，每天讲3场，嗓子哑了，含着含片继续讲。有人问她：“王老师，您累吗？”她说：“比起父亲在战场上，这点累算什么。”</p>
+                    <p>王放最喜欢的事情，是翻看家里的相册。她喜欢把父亲的老照片一张一张地拿给年轻人看，一边看，一边讲背后的故事。有一张照片她总是反复看——那是父亲在抗美援朝战争前和3名战友在景山公园拍的合影，是王有轩珍藏了一生的记忆。</p>
+                    <p>照片里，4个年轻人穿着军装，肩并着肩，对着镜头笑着。王放说：“父亲常常一个人对着这张照片发呆，一看就是一两个小时。照片上的人，两个牺牲在战场上，一个被炸断了腿，只有父亲回来了。他经常说，那么多战友都牺牲了，我这个活着的人，一定要替他们好好活着，替他们看看这个国家越来越好的样子。”</p>
+                    <p>如今，王放和她的宣讲团已经走遍了全国26个省市，做了上百场宣讲。她的团队也从最初的几个人，发展到了几十人，宣讲的内容涵盖了一个又一个革命先辈的感人故事。</p>
+                    <p>王放说：“只要有人想听，我就愿意讲。父亲的故事，不能在我这里断了。”红语薪传，薪火相传。王有轩的故事，如永不消逝的红色电波，穿越时空，穿越生死，穿越一代又一代人的记忆，在历史的天空中久久回荡。</p>
+                </div>
+            </div>
+
+            <!-- 结语页（无文字内容） -->
+            <div class="page back-cover" id="backCover"></div>
+        </div>
+        <div class="nav-buttons">
+            <div class="nav-left" id="prevBtn"></div>
+            <div class="nav-right" id="nextBtn"></div>
+        </div>
+    </div>
+    <div class="indicator-wrapper">
+        <span class="page-indicator" id="pageIndicator">封面</span>
+    </div>
+</div>
+
+<script>
+    const pages = document.querySelectorAll('.page');
+    let currentIndex = 0;
+    const total = pages.length;
+
+    function showPage(index) {
+        if (index < 0) index = 0;
+        if (index >= total) index = total - 1;
+        pages.forEach((page, i) => {
+            page.classList.remove('active');
+            if (i === index) page.classList.add('active');
+        });
+        currentIndex = index;
+        const indicator = document.getElementById('pageIndicator');
+        if (index === 0) indicator.innerText = '封面';
+        else if (index === total - 1) indicator.innerText = '结语';
+        else indicator.innerText = `第 ${index} 页 · 共 ${total-2} 页`;
+    }
+
+    document.getElementById('nextBtn').addEventListener('click', () => {
+        if (currentIndex < total - 1) showPage(currentIndex + 1);
+    });
+    document.getElementById('prevBtn').addEventListener('click', () => {
+        if (currentIndex > 0) showPage(currentIndex - 1);
+    });
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight') showPage(currentIndex + 1);
+        if (e.key === 'ArrowLeft') showPage(currentIndex - 1);
+    });
+    showPage(0);
+</script>
+<!-- 可选特效：动态粒子（如果需要，可取消注释） -->
+<!-- <script src="js/effects.js"></script> -->
+</body>
+</html>
