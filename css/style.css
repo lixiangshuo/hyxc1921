@@ -1,0 +1,185 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', 'Roboto', 'Noto Sans', system-ui, sans-serif;
+    color: #f0e6d0;
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+header {
+    text-align: center;
+    padding: 4rem 2rem 3rem;
+    background: rgba(139, 0, 0, 0.4);
+    backdrop-filter: blur(4px);
+    border-bottom: 2px solid rgba(255, 215, 0, 0.3);
+}
+
+header h1 {
+    font-size: 3rem;
+    letter-spacing: 2px;
+    text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+    color: #FFD966;
+}
+
+header p {
+    font-size: 1.2rem;
+    opacity: 0.9;
+}
+
+nav {
+    background: rgba(30, 20, 20, 0.8);
+    backdrop-filter: blur(12px);
+    text-align: center;
+    padding: 0.8rem 1rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 1px solid rgba(255, 200, 100, 0.3);
+}
+
+nav a {
+    color: #FFE4B5;
+    text-decoration: none;
+    margin: 0 1.2rem;
+    padding: 0.5rem 0.2rem;
+    font-weight: 500;
+    transition: all 0.3s;
+    border-bottom: 2px solid transparent;
+}
+
+nav a:hover {
+    color: #FFD966;
+    border-bottom-color: #FFD966;
+    transform: translateY(-2px);
+}
+
+main {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 2rem;
+}
+
+section, .story-card, .stat-card, .team-card {
+    background: rgba(30, 20, 20, 0.55);
+    backdrop-filter: blur(8px);
+    border-radius: 28px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border: 1px solid rgba(255, 200, 100, 0.2);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    transition: transform 0.25s ease;
+}
+
+section:hover, .story-card:hover {
+    transform: translateY(-5px);
+    background: rgba(40, 28, 28, 0.7);
+}
+
+h2, h3, h4 {
+    color: #FFD966;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+h2 {
+    font-size: 2rem;
+    border-left: 5px solid #FFD966;
+    padding-left: 1rem;
+}
+
+h3 {
+    font-size: 1.5rem;
+}
+
+.btn {
+    display: inline-block;
+    background: linear-gradient(135deg, #8B0000, #A52A2A);
+    color: #FFE4B5;
+    padding: 0.8rem 1.8rem;
+    text-decoration: none;
+    border-radius: 40px;
+    font-weight: bold;
+    transition: all 0.3s;
+    border: 1px solid rgba(255, 215, 0, 0.4);
+}
+
+.btn:hover {
+    background: linear-gradient(135deg, #A52A2A, #8B0000);
+    color: #FFD966;
+    transform: scale(1.02);
+}
+
+.story-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 1rem;
+}
+
+.story-card {
+    background: rgba(20, 15, 15, 0.7);
+    padding: 1.5rem;
+}
+
+.story-card h4 {
+    color: #FFB347;
+}
+
+.story-card a {
+    color: #FFD966;
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 1rem;
+}
+
+footer {
+    background: rgba(0, 0, 0, 0.8);
+    text-align: center;
+    padding: 2rem;
+    margin-top: 3rem;
+    font-size: 0.9rem;
+    color: #b0a07a;
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #FFB347;
+}
+
+.team-avatar {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #A52A2A, #8B0000);
+    border-radius: 50%;
+    margin: 0 auto 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: bold;
+    color: #FFD966;
+}
+
+.team-name {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.team-role, .team-major {
+    font-size: 0.85rem;
+    color: #e0c8a0;
+}
+
+@media (max-width: 768px) {
+    header h1 { font-size: 2rem; }
+    nav a { margin: 0 0.6rem; font-size: 0.85rem; }
+    section { padding: 1.2rem; }
+    h2 { font-size: 1.5rem; }
+    .story-grid { grid-template-columns: 1fr; }
+}
